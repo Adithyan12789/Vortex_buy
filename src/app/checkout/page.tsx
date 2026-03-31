@@ -8,6 +8,7 @@ const CheckoutPage = () => {
     const { cart, checkout, isLoading } = useCartStore();
     const navigate = useNavigate();
     const [paymentMethod, setPaymentMethod] = useState<'razorpay' | 'cod'>('razorpay');
+    const [shippingInfo, setShippingInfo] = useState({ name: '', email: '', address: '' });
 
     const subtotal = cart.lineItems.reduce((acc: number, item: any) => 
         acc + (item.productId?.price?.price || 0) * item.quantity, 0
@@ -18,12 +19,15 @@ const CheckoutPage = () => {
     const finalTotal = Math.max(0, subtotal - privilegeDiscount - marketIncentive);
 
     const handleAcquisition = () => {
-        if (paymentMethod === 'cod') {
-            alert("Order placed successfully via Cash on Delivery! Experience the Vortex soon.");
-            window.location.href = "/orders"; // Navigate to orders page
-        } else {
-            checkout(finalTotal);
+        if (!shippingInfo.name || !shippingInfo.email || !shippingInfo.address) {
+            alert("Please finalize your delivery coordinates before proceeding.");
+            return;
         }
+
+        checkout(finalTotal, { 
+            paymentMethod: paymentMethod === 'cod' ? 'COD' : 'Razorpay', 
+            shippingInfo 
+        });
     };
 
     if (!cart.lineItems || cart.lineItems.length === 0) {
@@ -60,15 +64,33 @@ const CheckoutPage = () => {
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div className="flex flex-col gap-2">
                                 <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-4">Full Legal Name</label>
-                                <input type="text" placeholder="e.g. Alexander Vortex" className="bg-gray-50 border border-gray-100 rounded-2xl p-4 px-6 text-sm focus:outline-none focus:ring-2 focus:ring-vortexBuy/20 transition-all font-medium" />
+                                <input 
+                                    type="text" 
+                                    value={shippingInfo.name}
+                                    onChange={(e) => setShippingInfo({...shippingInfo, name: e.target.value})}
+                                    placeholder="e.g. Alexander Vortex" 
+                                    className="bg-gray-50 border border-gray-100 rounded-2xl p-4 px-6 text-sm focus:outline-none focus:ring-2 focus:ring-vortexBuy/20 transition-all font-medium" 
+                                />
                             </div>
                             <div className="flex flex-col gap-2">
                                 <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-4">Contact Email</label>
-                                <input type="email" placeholder="alex@vault.vortex" className="bg-gray-50 border border-gray-100 rounded-2xl p-4 px-6 text-sm focus:outline-none focus:ring-2 focus:ring-vortexBuy/20 transition-all font-medium" />
+                                <input 
+                                    type="email" 
+                                    value={shippingInfo.email}
+                                    onChange={(e) => setShippingInfo({...shippingInfo, email: e.target.value})}
+                                    placeholder="alex@vault.vortex" 
+                                    className="bg-gray-50 border border-gray-100 rounded-2xl p-4 px-6 text-sm focus:outline-none focus:ring-2 focus:ring-vortexBuy/20 transition-all font-medium" 
+                                />
                             </div>
                             <div className="flex flex-col gap-2 md:col-span-2">
                                 <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-4">Global Delivery Address</label>
-                                <textarea rows={3} placeholder="Provide your full premium delivery coordinates..." className="bg-gray-50 border border-gray-100 rounded-2xl p-4 px-6 text-sm focus:outline-none focus:ring-2 focus:ring-vortexBuy/20 transition-all font-medium resize-none"></textarea>
+                                <textarea 
+                                    rows={3} 
+                                    value={shippingInfo.address}
+                                    onChange={(e) => setShippingInfo({...shippingInfo, address: e.target.value})}
+                                    placeholder="Provide your full premium delivery coordinates..." 
+                                    className="bg-gray-50 border border-gray-100 rounded-2xl p-4 px-6 text-sm focus:outline-none focus:ring-2 focus:ring-vortexBuy/20 transition-all font-medium resize-none"
+                                ></textarea>
                             </div>
                         </div>
                     </section>

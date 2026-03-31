@@ -6,7 +6,7 @@ import CartModel from "./CartModel";
 import Cookies from "js-cookie";
 import { useCartStore } from "@/hooks/useCartStore";
 import NotificationModel from "./NotificationModel";
-import { HiOutlineUser, HiOutlineBell, HiOutlineShoppingCart, HiUser } from "react-icons/hi2";
+import { HiOutlineQueueList, HiOutlineBell, HiOutlineShoppingCart, HiUser } from "react-icons/hi2";
 
 const Navicons = () => {
   const navigate = useNavigate();
@@ -36,7 +36,7 @@ const Navicons = () => {
         className="relative cursor-pointer group p-2 rounded-full hover:bg-gray-100/80 transition-all flex items-center gap-2"
         title="View Order History"
       >
-        <HiOutlineUser className="text-2xl text-gray-700 group-hover:text-vortexBuy transition-colors" />
+        <HiOutlineQueueList className="text-2xl text-gray-700 group-hover:text-vortexBuy transition-colors" />
         <span className="hidden lg:block text-[10px] font-black text-gray-400 group-hover:text-vortexBuy uppercase tracking-widest transition-colors">Orders</span>
       </Link>
 

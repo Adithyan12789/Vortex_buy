@@ -43,12 +43,16 @@ const ProfilePage = () => {
         <div className="max-w-[1440px] mx-auto px-4 md:px-8 lg:px-16 xl:px-24 pt-16 pb-32 animate-fade-up">
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-12 mb-20">
                 <div className="max-w-2xl">
-                    <span className="text-[11px] font-black text-vortexBuy uppercase tracking-[0.6em] mb-6 block">Order Tracking</span>
+                    <nav className="flex items-center gap-3 mb-8 text-[11px] font-black text-gray-400 uppercase tracking-[0.3em]">
+                        <Link to="/" className="hover:text-vortexBuy transition-colors">Home</Link>
+                        <span className="w-1 h-1 bg-gray-200 rounded-full"></span>
+                        <span className="text-gray-900">Orders History</span>
+                    </nav>
                     <h1 className="text-7xl md:text-8xl font-black text-gray-900 tracking-tighter leading-[0.8] mb-8">
-                        Your Acquisition <br /><span className="text-gray-200">Archive.</span>
+                        Orders <br /><span className="text-gray-200">History.</span>
                     </h1>
                     <p className="text-gray-500 font-medium leading-relaxed">
-                        A definitive record of your premium selections from the Vortex marketplace. Track the status and details of your previous acquisitions.
+                        Securely track and review your guest acquisitions from the Vortex collection. Every piece tells a story of curated excellence.
                     </p>
                 </div>
                 
@@ -133,6 +137,28 @@ const ProfilePage = () => {
                                                 </div>
                                             </div>
                                         ))}
+                                    </div>
+                                </div>
+
+                                {/* Order Details Footer */}
+                                <div className="p-10 md:p-12 bg-gray-50/30 border-t border-gray-50 flex flex-col md:flex-row gap-12">
+                                    <div className="flex-1">
+                                        <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-4 block">Logistics Destination</span>
+                                        <div className="flex flex-col gap-1">
+                                            <span className="text-sm font-black text-gray-900">{order.shippingInfo?.name || "Premium Guest"}</span>
+                                            <span className="text-xs font-medium text-gray-500">{order.shippingInfo?.email}</span>
+                                            <span className="text-xs text-gray-400 mt-2 leading-relaxed max-w-xs">{order.shippingInfo?.address || "Global Vault Coordinates"}</span>
+                                        </div>
+                                    </div>
+                                    <div className="md:border-l border-gray-100 md:pl-12 flex flex-col gap-6">
+                                        <div className="flex flex-col gap-1">
+                                            <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Transfer Protocol</span>
+                                            <span className="text-xs font-black text-vortexBuy uppercase tracking-wider">{order.paymentMethod}</span>
+                                        </div>
+                                        <div className="flex flex-col gap-1">
+                                            <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Acquisition Status</span>
+                                            <span className="text-xs font-black text-gray-900 uppercase tracking-wider">Authentication Verified</span>
+                                        </div>
                                     </div>
                                 </div>
                             </div>

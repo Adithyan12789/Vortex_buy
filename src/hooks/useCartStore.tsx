@@ -10,7 +10,7 @@ type CartState = {
   addItem: (productId: string, variantId: string, quantity: number) => void;
   removeItem: (itemId: string) => void;
   updateQuantity: (productId: string, quantity: number) => void;
-  checkout: (amount: number) => void;
+  checkout: (amount: number, metadata?: { paymentMethod: string; shippingInfo: any }) => void;
 };
 
 const getGuestId = () => {
@@ -91,17 +91,49 @@ export const useCartStore = create<CartState>((set, get) => ({
     }
   },
 
-  checkout: async (amount: number) => {
+  checkout: async (amount: number, metadata?: { paymentMethod: string; shippingInfo: any }) => {
     set((state) => ({ ...state, isLoading: true }));
     try {
       const cart = get().cart;
       const guestId = getGuestId();
       const res = await axios.post(
         `${import.meta.env.VITE_API_URL}/api/payment/create-order`,
-        { amount, lineItems: cart.lineItems, guestId }
+        { 
+          amount, 
+          lineItems: cart.lineItems, 
+          guestId,
+          paymentMethod: metadata?.paymentMethod || 'Razorpay',
+          shippingInfo: metadata?.shippingInfo
+        }
       );
 
       const order = res.data;
+      
+      // EXCLUSIVE DEMO PROTOCOL (Intercept mock orders)
+      if (order.id.startsWith('order_demo_')) {
+          console.info("AUTHENTICATING: Vortex-Vault Protocol [DEMO]");
+          setTimeout(async () => {
+              try {
+                  const verifyRes = await axios.post(
+                      `${import.meta.env.VITE_API_URL}/api/payment/verify`,
+                      { 
+                        razorpay_order_id: order.id, 
+                        razorpay_payment_id: "demo_transfer_" + Math.random().toString(36).slice(2)
+                      }
+                  );
+                  if (verifyRes.data.success) {
+                      alert("Acquisition Finalized Successfully! Your order has been registered in the Archive.");
+                      window.location.href = "/orders";
+                  }
+              } catch (err) {
+                  console.error("Demo Auth Failed", err);
+                  alert("Protocol Error: Failed to synchronize acquisition archive.");
+              } finally {
+                  set({ isLoading: false });
+              }
+          }, 2000);
+          return;
+      }
 
       const options = {
         key: import.meta.env.VITE_RAZORPAY_KEY_ID || "rzp_test_Oks5Gpac00wL72",
