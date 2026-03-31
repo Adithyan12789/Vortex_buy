@@ -22,28 +22,26 @@ const CartModel = () => {
           <div className="max-h-[380px] overflow-y-auto scrollbar-hide px-6 py-4 flex flex-col gap-6">
             {cart.lineItems.map((item: any) => (
               <div className="flex gap-4 group" key={item._id}>
-                {item.image && (
-                  <div className="relative w-20 h-24 flex-shrink-0 overflow-hidden rounded-2xl bg-gray-50 border border-gray-100 shadow-sm transition-transform duration-300 group-hover:scale-105">
-                     <img
-                       src={item.image}
-                       alt={item.productName?.original || "Product"}
-                       className="w-full h-full object-cover"
-                     />
-                  </div>
-                )}
+                <div className="relative w-20 h-24 flex-shrink-0 overflow-hidden rounded-2xl bg-gray-50 border border-gray-100 shadow-sm transition-transform duration-300 group-hover:scale-105">
+                  <img
+                    src={item.productId?.media?.mainMedia?.image?.url || "/product.png"}
+                    alt={item.productId?.name || "Product"}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
 
                 <div className="flex flex-col flex-1 min-w-0">
                   <div className="flex justify-between items-start gap-4 mb-1">
-                    <h3 className="font-bold text-gray-900 text-sm leading-tight line-clamp-1 truncate">
-                      {item.productName?.original}
+                    <h3 className="font-bold text-gray-900 text-sm leading-tight line-clamp-2">
+                      {item.productId?.name || "Premium Item"}
                     </h3>
-                    <div className="font-black text-vortexBuy text-sm">
-                      ₹{item.price?.amount}
+                    <div className="font-black text-vortexBuy text-sm whitespace-nowrap">
+                      ₹{item.productId?.price?.price || 0}
                     </div>
                   </div>
 
                   <div className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-4">
-                    Ref: {item._id?.slice(-8) || 'VX-001'}
+                    Ref: {item.productId?._id?.slice(-8) || 'VX-001'}
                   </div>
 
                   <div className="flex items-center justify-between mt-auto">
@@ -53,7 +51,7 @@ const CartModel = () => {
                     </div>
                     <button 
                       className="text-[10px] font-black uppercase tracking-widest text-red-400 hover:text-red-600 transition-colors cursor-pointer" 
-                      onClick={() => !isLoading && removeItem(item._id!)}
+                      onClick={() => !isLoading && removeItem(item.productId?._id!)}
                     >
                       {isLoading ? "Wait..." : "Remove"}
                     </button>
@@ -66,7 +64,9 @@ const CartModel = () => {
           <div className="p-8 bg-gray-50/50 border-t border-gray-100">
             <div className="flex items-center justify-between font-black text-gray-900 text-lg mb-2">
               <span className="tracking-tight">Grand Total</span>
-              <span className="text-vortexBuy">₹{cart.subtotal.amount}</span>
+              <span className="text-vortexBuy">
+                ₹{cart.lineItems.reduce((acc: number, item: any) => acc + (item.productId?.price?.price || 0) * item.quantity, 0)}
+              </span>
             </div>
             <p className="text-gray-400 text-xs font-medium mb-8">
               Complimentary shipping for premium members. Taxes included.
