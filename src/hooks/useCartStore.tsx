@@ -104,7 +104,7 @@ export const useCartStore = create<CartState>((set, get) => ({
       const order = res.data;
 
       const options = {
-        key: import.meta.env.VITE_RAZORPAY_KEY_ID || "rzp_test_12345abcdef",
+        key: import.meta.env.VITE_RAZORPAY_KEY_ID || "rzp_test_Oks5Gpac00wL72",
         amount: order.amount,
         currency: order.currency,
         name: "Vortex Buy",
