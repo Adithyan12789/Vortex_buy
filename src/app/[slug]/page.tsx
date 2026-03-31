@@ -5,6 +5,7 @@ import Add from "@/components/Add";
 import CustomizeProducts from "@/components/CustomizeProducts";
 import ProductImages from "@/components/ProductImages";
 import ProductList from "@/components/ProductList";
+import Reviews from "@/components/Reviews";
 
 const SinglePage = () => {
   const { slug } = useParams();
@@ -218,6 +219,11 @@ const SinglePage = () => {
              </div>
           </div>
         </div>
+      </div>
+
+      {/* REVIEWS SECTION */}
+      <div className="mt-48 pt-24 border-t border-gray-100">
+        <Reviews productId={product._id} />
       </div>
 
       {/* FOOTER: RELATED PRODUCTS */}

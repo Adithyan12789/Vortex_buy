@@ -78,9 +78,10 @@ export const useCartStore = create<CartState>((set, get) => ({
     set((state) => ({ ...state, isLoading: true }));
     try {
       const cart = get().cart;
+      const guestId = getGuestId();
       const res = await axios.post(
         `${import.meta.env.VITE_API_URL}/api/payment/create-order`,
-        { amount, lineItems: cart.lineItems }
+        { amount, lineItems: cart.lineItems, guestId }
       );
 
       const order = res.data;

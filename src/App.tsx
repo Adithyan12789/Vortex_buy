@@ -9,6 +9,9 @@ import Loader from "@/components/Loader";
 import DealsPage from "@/app/deals/page";
 import AboutPage from "@/app/about/page";
 import ContactPage from "@/app/contact/page";
+import CartPage from "@/app/cart/page";
+import ProfilePage from "@/app/profile/page";
+import CheckoutPage from "@/app/checkout/page";
 
 const Layout = ({ children }: { children: React.ReactNode }) => {
   const location = useLocation();
@@ -31,6 +34,9 @@ function App() {
             <Route path="/" element={<HomePage />} />
             <Route path="/list" element={<ListPage />} />
             <Route path="/:slug" element={<SinglePage />} />
+            <Route path="/cart" element={<CartPage />} />
+            <Route path="/profile" element={<ProfilePage />} />
+            <Route path="/checkout" element={<CheckoutPage />} />
             <Route path="/deals" element={<DealsPage />} />
             <Route path="/about" element={<AboutPage />} />
             <Route path="/contact" element={<ContactPage />} />

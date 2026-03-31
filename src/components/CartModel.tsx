@@ -1,5 +1,6 @@
 import { useCartStore } from "@/hooks/useCartStore";
 import React from "react";
+import { Link } from "react-router-dom";
 
 const CartModel = () => {
   const { cart, isLoading, removeItem, checkout } = useCartStore();
@@ -73,16 +74,18 @@ const CartModel = () => {
             </p>
 
             <div className="flex flex-col gap-3">
-              <button 
-                onClick={() => checkout(cart.subtotal.amount)}
-                disabled={isLoading}
-                className="w-full py-4 bg-black text-white rounded-2xl font-black text-sm shadow-xl shadow-black/10 hover:bg-gray-900 active:scale-[0.98] transition-all flex items-center justify-center gap-2 disabled:bg-gray-400 disabled:cursor-not-allowed"
+              <Link 
+                to="/checkout"
+                className="w-full py-4 bg-black text-white rounded-2xl font-black text-sm shadow-xl shadow-black/10 hover:bg-gray-900 active:scale-[0.98] transition-all flex items-center justify-center gap-2 text-center"
               >
-                 {isLoading ? "Processing Premium Request..." : <>Proceed to Checkout <span>→</span></>}
-              </button>
-              <button className="w-full py-4 bg-white border border-gray-200 text-gray-900 rounded-2xl font-black text-sm hover:bg-gray-50 active:scale-[0.98] transition-all">
+                 Proceed to Checkout <span>→</span>
+              </Link>
+              <Link 
+                to="/cart" 
+                className="w-full py-4 bg-white border border-gray-200 text-gray-900 rounded-2xl font-black text-sm hover:bg-gray-50 active:scale-[0.98] transition-all text-center block"
+              >
                  Full Cart Overview
-              </button>
+              </Link>
             </div>
           </div>
         </>
