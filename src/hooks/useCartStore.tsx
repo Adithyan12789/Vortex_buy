@@ -9,6 +9,7 @@ type CartState = {
   getCart: () => void;
   addItem: (productId: string, variantId: string, quantity: number) => void;
   removeItem: (itemId: string) => void;
+  updateQuantity: (productId: string, quantity: number) => void;
   checkout: (amount: number) => void;
 };
 
@@ -70,6 +71,22 @@ export const useCartStore = create<CartState>((set, get) => ({
       set({ cart, counter: cart?.lineItems?.length || 0, isLoading: false });
     } catch (error) {
       console.error("Remove item failed", error);
+      set((state) => ({ ...state, isLoading: false }));
+    }
+  },
+
+  updateQuantity: async (productId, quantity) => {
+    set((state) => ({ ...state, isLoading: true }));
+    try {
+      const guestId = getGuestId();
+      const res = await axios.post(
+        `${import.meta.env.VITE_API_URL}/api/cart/update-quantity`,
+        { productId, quantity, guestId }
+      );
+      const cart = res.data.cart;
+      set({ cart, counter: cart?.lineItems?.length || 0, isLoading: false });
+    } catch (error) {
+      console.error("Update quantity failed", error);
       set((state) => ({ ...state, isLoading: false }));
     }
   },

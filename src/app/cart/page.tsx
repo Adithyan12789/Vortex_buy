@@ -5,11 +5,15 @@ import { Link } from "react-router-dom";
 import { HiOutlineTrash, HiOutlineShoppingBag, HiOutlineArrowLeft } from "react-icons/hi2";
 
 const CartPage = () => {
-  const { cart, isLoading, removeItem, checkout } = useCartStore();
+  const { cart, isLoading, removeItem, checkout, updateQuantity } = useCartStore();
 
   const subtotal = cart.lineItems.reduce((acc: number, item: any) => 
     acc + (item.productId?.price?.price || 0) * item.quantity, 0
   );
+
+  const privilegeDiscount = Math.round(subtotal * 0.1);
+  const marketIncentive = subtotal > 0 ? 500 : 0;
+  const finalTotal = Math.max(0, subtotal - privilegeDiscount - marketIncentive);
 
   if (!cart.lineItems || cart.lineItems.length === 0) {
     return (
@@ -93,8 +97,20 @@ const CartPage = () => {
 
                   {/* Qty */}
                   <div className="col-span-1 md:col-span-2 flex justify-center">
-                    <div className="flex items-center gap-6 px-5 py-3 bg-gray-50 rounded-2xl border border-gray-100">
-                       <span className="text-base font-black text-gray-900 tabular-nums">{item.quantity}</span>
+                    <div className="flex items-center gap-4 px-3 py-2 bg-gray-50 rounded-2xl border border-gray-100 group-hover:border-vortexBuy/30 transition-all">
+                       <button 
+                         onClick={() => updateQuantity(item.productId?._id, item.quantity - 1)}
+                         className="w-8 h-8 rounded-full bg-white border border-gray-200 flex items-center justify-center text-gray-500 hover:bg-vortexBuy hover:text-white hover:border-vortexBuy transition-all shadow-sm active:scale-90"
+                       >
+                         -
+                       </button>
+                       <span className="text-base font-black text-gray-900 tabular-nums w-8 text-center">{item.quantity}</span>
+                       <button 
+                         onClick={() => updateQuantity(item.productId?._id, item.quantity + 1)}
+                         className="w-8 h-8 rounded-full bg-white border border-gray-200 flex items-center justify-center text-gray-500 hover:bg-vortexBuy hover:text-white hover:border-vortexBuy transition-all shadow-sm active:scale-90"
+                       >
+                         +
+                       </button>
                     </div>
                   </div>
 
@@ -139,7 +155,18 @@ const CartPage = () => {
               <div className="flex flex-col gap-8 mb-12">
                 <div className="flex items-center justify-between">
                   <span className="text-[10px] font-black uppercase tracking-[0.3em] text-white/40">Subtotal Value</span>
-                  <span className="text-xl font-black tracking-tight">₹{subtotal}</span>
+                  <span className="text-xl font-black tracking-tight text-white/80">₹{subtotal}</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <div className="flex flex-col">
+                    <span className="text-[10px] font-black uppercase tracking-[0.3em] text-vortexBuy">Vortex Privilege</span>
+                    <span className="text-[#00FF00] text-[8px] uppercase tracking-widest font-black leading-none mt-1">10% Exclusive Benefit</span>
+                  </div>
+                  <span className="text-lg font-black tracking-tight text-[#00FF00]">-₹{privilegeDiscount}</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-[10px] font-black uppercase tracking-[0.3em] text-white/40">Market Incentive</span>
+                  <span className="text-lg font-black tracking-tight text-[#00FF00]">-₹{marketIncentive}</span>
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="text-[10px] font-black uppercase tracking-[0.3em] text-white/40">Market Logistics</span>
@@ -147,10 +174,10 @@ const CartPage = () => {
                 </div>
                 <div className="flex items-center justify-between border-t border-white/10 pt-8 mt-4">
                   <div className="flex flex-col">
-                    <span className="text-[10px] font-black uppercase tracking-[0.3em] text-vortexBuy mb-1">Total Valuation</span>
-                    <span className="text-gray-400 text-[9px] uppercase tracking-widest">Inclusive of exclusive taxes</span>
+                    <span className="text-[10px] font-black uppercase tracking-[0.3em] text-white underline underline-offset-8 decoration-vortexBuy mb-4">Total Valuation</span>
+                    <span className="text-gray-400 text-[9px] uppercase tracking-widest leading-none mt-2">Inclusive of exclusive taxes</span>
                   </div>
-                  <span className="text-4xl font-black tracking-tight text-white">₹{subtotal}</span>
+                  <span className="text-4xl font-black tracking-tight text-white">₹{finalTotal}</span>
                 </div>
               </div>
 
