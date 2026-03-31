@@ -4,6 +4,8 @@ import DOMPurify from 'isomorphic-dompurify';
 import Pagination from './Pagination';
 import axios from 'axios';
 
+import { useCartStore } from '@/hooks/useCartStore';
+
 /* ── Skeleton card ── */
 const SkeletonCard = ({ delay }: { delay: string }) => (
   <div
@@ -42,6 +44,7 @@ const ProductList = ({
     hasNext: false,
   });
   const [loading, setLoading] = useState(true);
+  const { addItem } = useCartStore();
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -70,6 +73,12 @@ const ProductList = ({
       </div>
     );
   }
+
+  const handleAddToCart = (e: React.MouseEvent, productId: string) => {
+    e.preventDefault();
+    e.stopPropagation();
+    addItem(productId, "00000000-0000-0000-0000-000000000000", 1);
+  };
 
   return (
     <div className="mt-12 flex gap-x-6 gap-y-10 justify-between flex-wrap">
@@ -132,7 +141,9 @@ const ProductList = ({
             />
           )}
 
-          <button className="self-start rounded-full border border-vortexBuy text-vortexBuy text-xs py-2 px-5 font-semibold
+          <button 
+            onClick={(e) => handleAddToCart(e, product._id)}
+            className="self-start rounded-full border border-vortexBuy text-vortexBuy text-xs py-2 px-5 font-semibold
             hover:bg-vortexBuy hover:text-white hover:shadow-lg hover:shadow-vortexBuy/30
             transition-all duration-250 active:scale-95">
             Add to Cart
