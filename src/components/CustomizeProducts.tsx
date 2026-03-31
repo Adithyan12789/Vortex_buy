@@ -2,20 +2,39 @@
 import React, { useEffect, useState } from "react";
 import Add from "./Add";
 
+type Choice = {
+  description?: string;
+  value?: string;
+};
+
+type ProductOption = {
+  name?: string;
+  choices?: Choice[];
+};
+
+type Variant = {
+  _id?: string;
+  choices?: { [key: string]: string };
+  stock?: {
+    inStock?: boolean;
+    quantity?: number;
+  };
+};
+
 const CustomizeProducts = ({
   productId,
   variants,
   productOptions,
 }: {
   productId: string;
-  variants: products.Variant[];
-  productOptions: products.ProductOption[];
+  variants: Variant[];
+  productOptions: ProductOption[];
 }) => {
   const [selectedOptions, setSelectionOption] = useState<{
     [key: string]: string;
   }>({});
 
-  const [selectedVariant, setSelectedVariant] = useState<products.Variant>();
+  const [selectedVariant, setSelectedVariant] = useState<Variant>();
 
   useEffect(() => {
     const variant = variants.find((v) => {
@@ -57,7 +76,7 @@ const CustomizeProducts = ({
             Select {option.name}
           </h4>
           <ul className="flex items-center gap-4 flex-wrap">
-            {option.choices?.map((choice) => {
+            {option.choices?.map((choice: Choice) => {
               const disabled = !isVariantInStock({
                 ...selectedOptions,
                 [option.name!]: choice.description!,
