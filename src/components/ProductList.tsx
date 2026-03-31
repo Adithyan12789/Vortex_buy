@@ -50,7 +50,7 @@ const ProductList = ({
         const params: any = { limit, page, ...additionalParams };
         if (categoryId) params.categoryId = categoryId;
         if (excludeId) params.exclude = excludeId;
-        const response = await axios.get('http://localhost:5000/api/products', { params });
+        const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/products`, { params });
         setRes(response.data);
       } catch (error) {
         console.error('Failed to fetch products:', error);

@@ -1,6 +1,4 @@
 
-
-import { products } from "@wix/stores";
 import React, { useEffect, useState } from "react";
 import Add from "./Add";
 
@@ -14,7 +12,7 @@ const CustomizeProducts = ({
   productOptions: products.ProductOption[];
 }) => {
   const [selectedOptions, setSelectionOption] = useState<{
-    [ket: string]: string;
+    [key: string]: string;
   }>({});
 
   const [selectedVariant, setSelectedVariant] = useState<products.Variant>();
@@ -50,12 +48,15 @@ const CustomizeProducts = ({
       );
     });
   };
+
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col gap-10">
       {productOptions.map((option) => (
-        <div className="flex flex-col gap-6" key={option.name}>
-          <h4 className="font-medium">Choose a {option.name}</h4>
-          <ul className="flex items-center gap-3">
+        <div className="flex flex-col gap-5" key={option.name}>
+          <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400">
+            Select {option.name}
+          </h4>
+          <ul className="flex items-center gap-4 flex-wrap">
             {option.choices?.map((choice) => {
               const disabled = !isVariantInStock({
                 ...selectedOptions,
@@ -69,35 +70,35 @@ const CustomizeProducts = ({
                 ? undefined
                 : () => handleOptionSelect(option.name!, choice.description!);
 
-              return option.name === "color" ? (
+              return option.name?.toLowerCase() === "color" ? (
                 <li
-                  className="w-8 h-8 rounded-full ring-1 ring-gray-300 relative"
-                  style={{
-                    backgroundColor: choice.value,
-                    cursor: disabled ? "not-allowed" : "pointer",
-                  }}
+                  key={choice.description}
+                  className={`w-12 h-12 rounded-full relative flex items-center justify-center transition-all duration-500 shadow-sm ${
+                    disabled ? "cursor-not-allowed opacity-30" : "cursor-pointer hover:scale-110 active:scale-95"
+                  }`}
                   onClick={clickHandler}
                 >
+                   <div 
+                    className={`w-10 h-10 rounded-full border border-black/5 shadow-inner transition-transform duration-500 ${selected ? 'scale-110' : ''}`}
+                    style={{ backgroundColor: choice.value }}
+                  />
                   {selected && (
-                    <div className="absolute w-10 h-10 rounded-full ring-2 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2" />
+                    <div className="absolute inset-0 rounded-full ring-2 ring-vortexBuy ring-offset-4 scale-100 animate-fade-in" />
                   )}
                   {disabled && (
-                    <div className="absolute w-10 h-[2px] rotate-45 bg-red-400 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2" />
+                    <div className="absolute w-10 h-[2px] rotate-[135deg] bg-red-500/50 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" />
                   )}
                 </li>
               ) : (
                 <li
-                  className="ring-1 text-vortexBuy ring-vortexBuy rounded-md py-1 px-4 text-sm"
-                  style={{
-                    backgroundColor: selected
-                      ? "#f35c7a"
+                  key={choice.description}
+                  className={`px-8 py-3 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] transition-all duration-500 border ${
+                    selected
+                      ? "bg-gray-900 text-white border-gray-900 shadow-2xl shadow-black/10 scale-105"
                       : disabled
-                      ? "#FBCFE8"
-                      : "white",
-                    cursor: disabled ? "not-allowed" : "pointer",
-                    color: selected || disabled ? "white" : "#f35c7a",
-                    boxShadow: disabled ? "none" : "",
-                  }}
+                      ? "bg-gray-50 text-gray-300 border-gray-100 cursor-not-allowed opacity-40"
+                      : "bg-white text-gray-500 border-gray-100 hover:border-vortexBuy/40 hover:text-vortexBuy cursor-pointer"
+                  }`}
                   onClick={clickHandler}
                 >
                   {choice.description}
@@ -113,30 +114,6 @@ const CustomizeProducts = ({
         variantId={selectedVariant?._id || "00000000-0000-0000-0000-000000000000"}
         stockNumber={selectedVariant?.stock?.quantity || 0}
       />
-
-      {/* COLOR */}
-
-      {/* 
-<ul className="flex items-center gap-3">
-  <li className="w-8 h-8 rounded-full ring-1 ring-gray-300 cursor-pointer relative bg-red-500">
-    <div className="absolute w-10 h-10 rounded-full ring-2 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2" />
-  </li>
-
-  <li className="w-8 h-8 rounded-full ring-1 ring-gray-300 cursor-pointer relative bg-blue-500"></li>
-
-  <li className="w-8 h-8 rounded-full ring-1 ring-gray-300 cursor-not-allowed relative bg-green-500">
-    <div className="absolute w-10 h-[2px] rotate-45 bg-red-400 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2" />
-  </li>
-</ul> */}
-
-      {/* OTHERS */}
-
-      {/* <h4 className='font-medium'>Choose a size</h4>
-<ul className='flex items-center gap-3'>
-  <li className='ring-1 text-vortexBuy ring-vortexBuy rounded-md py-1 px-4 text-sm cursor-pointer'>Small</li>
-  <li className='ring-1 text-white bg-vortexBuy rounded-md py-1 px-4 text-sm cursor-pointer'>Medium</li>
-  <li className='ring-1 text-white ring-pink-200 bg-pink-200 rounded-md py-1 px-4 text-sm cursor-not-allowed'>Large</li>
-</ul> */}
     </div>
   );
 };

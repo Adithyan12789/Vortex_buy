@@ -139,7 +139,7 @@ const ListPage = () => {
 
   /* fetch categories once */
   useEffect(() => {
-    axios.get('http://localhost:5000/api/categories')
+    axios.get(`${import.meta.env.VITE_API_URL}/api/categories`)
       .then(r => setCategories(r.data?.items || []))
       .catch(() => {});
   }, []);
@@ -163,7 +163,7 @@ const ListPage = () => {
       if (minPrice) params.min    = minPrice;
       if (maxPrice) params.max    = maxPrice;
       if (cat)      params.cat    = cat;
-      const res = await axios.get('http://localhost:5000/api/products', { params });
+      const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/products`, { params });
       setProducts(res.data.items || []);
       setTotalCount(res.data.totalCount || 0);
       setTotalPages(res.data.totalPages || 1);

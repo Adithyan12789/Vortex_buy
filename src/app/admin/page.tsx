@@ -44,7 +44,7 @@ const AdminDashboard = () => {
       Object.keys(formData).forEach(key => data.append(key, (formData as any)[key]));
       files.forEach(f => data.append('images', f));
 
-      await axios.post('http://localhost:5000/api/products', data);
+      await axios.post(`${import.meta.env.VITE_API_URL}/api/products`, data);
       setMessage('Product added successfully!');
       setFormData({ name: '', description: '', price: '', discountedPrice: '', categorySlug: '', stock: '' });
       setFiles([]);

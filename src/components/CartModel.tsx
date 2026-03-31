@@ -2,7 +2,7 @@ import { useCartStore } from "@/hooks/useCartStore";
 import React from "react";
 
 const CartModel = () => {
-  const { cart, isLoading, removeItem } = useCartStore();
+  const { cart, isLoading, removeItem, checkout } = useCartStore();
 
   return (
     <div className="absolute right-0 top-12 w-80 md:w-[420px] bg-white rounded-3xl shadow-[0_20px_50px_rgba(0,0,0,0.15)] border border-gray-100 z-50 overflow-hidden animate-fade-up">
@@ -73,9 +73,12 @@ const CartModel = () => {
             </p>
 
             <div className="flex flex-col gap-3">
-              <button className="w-full py-4 bg-black text-white rounded-2xl font-black text-sm shadow-xl shadow-black/10 hover:bg-gray-900 active:scale-[0.98] transition-all flex items-center justify-center gap-2">
-                 Proceed to Checkout
-                 <span>→</span>
+              <button 
+                onClick={() => checkout(cart.subtotal.amount)}
+                disabled={isLoading}
+                className="w-full py-4 bg-black text-white rounded-2xl font-black text-sm shadow-xl shadow-black/10 hover:bg-gray-900 active:scale-[0.98] transition-all flex items-center justify-center gap-2 disabled:bg-gray-400 disabled:cursor-not-allowed"
+              >
+                 {isLoading ? "Processing Premium Request..." : <>Proceed to Checkout <span>→</span></>}
               </button>
               <button className="w-full py-4 bg-white border border-gray-200 text-gray-900 rounded-2xl font-black text-sm hover:bg-gray-50 active:scale-[0.98] transition-all">
                  Full Cart Overview

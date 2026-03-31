@@ -1,6 +1,7 @@
 import { useNavigate, useLocation } from "react-router-dom";
 import React, { useState, useEffect } from "react";
 import Cookies from "js-cookie";
+import axios from "axios";
 
 enum MODE {
   LOGIN = "LOGIN",
@@ -60,21 +61,34 @@ const LoginPage = () => {
     e.preventDefault();
     setIsLoading(true);
     setError("");
+    setMessage("");
 
     try {
-      // Mock Backend Login
-      setTimeout(() => {
-        if (mode === MODE.LOGIN || mode === MODE.REGISTER) {
-          Cookies.set("token", "dummy-auth-token", { expires: 2 });
-          setMessage("Authentication successful.");
-          navigate("/");
-        } else {
-          setMessage("Action initiated. Check your inbox.");
-        }
-        setIsLoading(false);
-      }, 1500);
-    } catch (err) {
-      setError("Authorization failed. Please verify details.");
+      const apiUrl = import.meta.env.VITE_API_URL;
+
+      if (mode === MODE.REGISTER) {
+        const res = await axios.post(`${apiUrl}/api/register`, { username: userName, email, password });
+        setMessage(res.data.msg); // "Registered успешно. Verify OTP."
+        setMode(MODE.EMAIL_VERIFICATION);
+      } 
+      else if (mode === MODE.EMAIL_VERIFICATION) {
+        const res = await axios.post(`${apiUrl}/api/verify-otp`, { email, otp: emailCode });
+        Cookies.set("token", res.data.token, { expires: 30 }); // 30 days
+        setMessage("Email verified. Welcome!");
+        navigate("/");
+        window.location.reload();
+      }
+      else if (mode === MODE.LOGIN) {
+        const res = await axios.post(`${apiUrl}/api/login`, { email, password });
+        Cookies.set("token", res.data.token, { expires: 30 });
+        setMessage("Login successful!");
+        navigate("/");
+        window.location.reload();
+      }
+    } catch (err: any) {
+      setError(err.response?.data?.msg || "Authentication failed. Please check your credentials.");
+      console.error(err);
+    } finally {
       setIsLoading(false);
     }
   };
