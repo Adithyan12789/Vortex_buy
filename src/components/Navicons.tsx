@@ -30,14 +30,14 @@ const Navicons = () => {
 
   return (
     <div className="flex items-center gap-4 xl:gap-6 relative">
-      {/* PROFILE */}
+      {/* ORDERS HISTORY */}
       <Link 
-        to="/profile" 
+        to="/orders" 
         className="relative cursor-pointer group p-2 rounded-full hover:bg-gray-100/80 transition-all flex items-center gap-2"
-        title="View Your Archives"
+        title="View Order History"
       >
         <HiOutlineUser className="text-2xl text-gray-700 group-hover:text-vortexBuy transition-colors" />
-        <span className="hidden lg:block text-[10px] font-black text-gray-400 group-hover:text-vortexBuy uppercase tracking-widest transition-colors">Archive</span>
+        <span className="hidden lg:block text-[10px] font-black text-gray-400 group-hover:text-vortexBuy uppercase tracking-widest transition-colors">Orders</span>
       </Link>
 
       {/* NOTIFICATIONS */}
