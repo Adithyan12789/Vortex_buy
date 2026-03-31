@@ -7,10 +7,24 @@ import { HiOutlineShieldCheck, HiOutlineTruck, HiOutlineArrowLeft } from "react-
 const CheckoutPage = () => {
     const { cart, checkout, isLoading } = useCartStore();
     const navigate = useNavigate();
+    const [paymentMethod, setPaymentMethod] = useState<'razorpay' | 'cod'>('razorpay');
 
     const subtotal = cart.lineItems.reduce((acc: number, item: any) => 
         acc + (item.productId?.price?.price || 0) * item.quantity, 0
     );
+
+    const privilegeDiscount = Math.round(subtotal * 0.1);
+    const marketIncentive = subtotal > 0 ? 500 : 0;
+    const finalTotal = Math.max(0, subtotal - privilegeDiscount - marketIncentive);
+
+    const handleAcquisition = () => {
+        if (paymentMethod === 'cod') {
+            alert("Order placed successfully via Cash on Delivery! Experience the Vortex soon.");
+            window.location.href = "/orders"; // Navigate to orders page
+        } else {
+            checkout(finalTotal);
+        }
+    };
 
     if (!cart.lineItems || cart.lineItems.length === 0) {
         return (
@@ -65,17 +79,40 @@ const CheckoutPage = () => {
                             <h3 className="text-xl font-black tracking-tight text-gray-900">Transfer Methods</h3>
                         </div>
                         
-                        <div className="p-8 bg-vortexBuy/5 rounded-3xl border border-vortexBuy/10 flex items-center justify-between group cursor-pointer hover:bg-vortexBuy/10 transition-all">
-                            <div className="flex items-center gap-6">
-                                <div className="w-12 h-12 rounded-2xl bg-white border border-vortexBuy/20 flex items-center justify-center">
-                                    <HiOutlineShieldCheck className="text-2xl text-vortexBuy" />
+                        <div className="flex flex-col gap-4">
+                            {/* Razorpay Option */}
+                            <button 
+                                onClick={() => setPaymentMethod('razorpay')}
+                                className={`w-full p-8 rounded-3xl border text-left transition-all duration-500 flex items-center justify-between group ${paymentMethod === 'razorpay' ? 'bg-vortexBuy/5 border-vortexBuy/40 shadow-xl shadow-vortexBuy/5' : 'bg-gray-50 border-gray-100 hover:border-vortexBuy/20 hover:bg-gray-100/50'}`}
+                            >
+                                <div className="flex items-center gap-6">
+                                    <div className={`w-12 h-12 rounded-2xl flex items-center justify-center transition-colors ${paymentMethod === 'razorpay' ? 'bg-vortexBuy text-white' : 'bg-white border border-gray-100 text-gray-400'}`}>
+                                        <HiOutlineShieldCheck className="text-2xl" />
+                                    </div>
+                                    <div className="flex flex-col">
+                                        <span className={`text-base font-black ${paymentMethod === 'razorpay' ? 'text-gray-900' : 'text-gray-500'}`}>Razorpay Secure Transfer</span>
+                                        <span className="text-[9px] font-bold text-vortexBuy uppercase tracking-widest mt-1">Authentic Vault Protocol Active</span>
+                                    </div>
                                 </div>
-                                <div className="flex flex-col">
-                                    <span className="text-base font-black text-gray-900">Razorpay Secure Transfer</span>
-                                    <span className="text-[9px] font-bold text-vortexBuy uppercase tracking-widest mt-1">Authentic Vault Protocol Active</span>
+                                <div className={`w-6 h-6 rounded-full border-4 transition-all ${paymentMethod === 'razorpay' ? 'border-vortexBuy bg-white scale-110' : 'border-gray-200 bg-white'}`}></div>
+                            </button>
+
+                            {/* COD Option */}
+                            <button 
+                                onClick={() => setPaymentMethod('cod')}
+                                className={`w-full p-8 rounded-3xl border text-left transition-all duration-500 flex items-center justify-between group ${paymentMethod === 'cod' ? 'bg-gray-900 border-gray-900 shadow-xl shadow-black/10' : 'bg-gray-50 border-gray-100 hover:border-vortexBuy/20 hover:bg-gray-100/50'}`}
+                            >
+                                <div className="flex items-center gap-6">
+                                    <div className={`w-12 h-12 rounded-2xl flex items-center justify-center transition-colors ${paymentMethod === 'cod' ? 'bg-white text-gray-900' : 'bg-white border border-gray-100 text-gray-400'}`}>
+                                        <span className="material-icons-outlined text-2xl">payments</span>
+                                    </div>
+                                    <div className="flex flex-col">
+                                        <span className={`text-base font-black ${paymentMethod === 'cod' ? 'text-white' : 'text-gray-500'}`}>Cash on Delivery</span>
+                                        <span className={`text-[9px] font-bold uppercase tracking-widest mt-1 ${paymentMethod === 'cod' ? 'text-vortexBuy' : 'text-gray-400'}`}>Market Logistics Incentive</span>
+                                    </div>
                                 </div>
-                            </div>
-                            <div className="w-6 h-6 rounded-full border-4 border-vortexBuy bg-white"></div>
+                                <div className={`w-6 h-6 rounded-full border-4 transition-all ${paymentMethod === 'cod' ? 'border-vortexBuy bg-white scale-110' : 'border-gray-200 bg-white'}`}></div>
+                            </button>
                         </div>
                     </section>
                 </div>
@@ -106,26 +143,33 @@ const CheckoutPage = () => {
 
                         <div className="flex flex-col gap-6 pt-10 border-t border-gray-50">
                             <div className="flex items-center justify-between">
-                                <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Acquisition Total</span>
-                                <span className="text-xl font-black text-gray-900">₹{subtotal}</span>
+                                <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Subtotal Value</span>
+                                <span className="text-sm font-bold text-gray-400">₹{subtotal}</span>
                             </div>
                             <div className="flex items-center justify-between">
-                                <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Market Logistics</span>
-                                <span className="text-[10px] font-black text-[#00AA00] uppercase tracking-widest">Included</span>
+                                <div className="flex flex-col">
+                                    <span className="text-[10px] font-black text-vortexBuy uppercase tracking-widest">Vortex Privilege</span>
+                                    <span className="text-[8px] font-black text-green-500 uppercase">10% Exclusive Benefit</span>
+                                </div>
+                                <span className="text-sm font-black text-green-500">-₹{privilegeDiscount}</span>
+                            </div>
+                            <div className="flex items-center justify-between">
+                                <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Market Incentive</span>
+                                <span className="text-sm font-black text-green-500">-₹{marketIncentive}</span>
                             </div>
                             <div className="flex items-center justify-between pt-6 border-t border-gray-100">
                                 <span className="text-xs font-black uppercase tracking-[0.3em] text-vortexBuy">Amount to Secure</span>
-                                <span className="text-4xl font-black text-gray-900 tracking-tight">₹{subtotal}</span>
+                                <span className="text-4xl font-black text-gray-900 tracking-tight">₹{finalTotal}</span>
                             </div>
                         </div>
 
                         <button 
-                            onClick={() => checkout(subtotal)}
+                            onClick={handleAcquisition}
                             disabled={isLoading}
-                            className="w-full mt-12 bg-gray-900 text-white py-6 rounded-3xl font-black text-xs uppercase tracking-[0.3em] hover:bg-vortexBuy hover:shadow-2xl hover:shadow-vortexBuy/20 transition-all duration-500 active:scale-95 flex items-center justify-center gap-4 disabled:bg-gray-200"
+                            className={`w-full mt-12 py-6 rounded-3xl font-black text-xs uppercase tracking-[0.3em] transition-all duration-500 active:scale-95 flex items-center justify-center gap-4 disabled:bg-gray-200 ${paymentMethod === 'cod' ? 'bg-black text-white hover:bg-gray-800' : 'bg-gray-900 text-white hover:bg-vortexBuy hover:shadow-2xl hover:shadow-vortexBuy/20'}`}
                         >
-                            {isLoading ? "Synchronizing Vault..." : "Initiate Secure Transfer"}
-                            <span className="material-icons-outlined text-sm">lock</span>
+                            {isLoading ? "Synchronizing Vault..." : paymentMethod === 'cod' ? "Confirm Acquisition (COD)" : "Initiate Secure Transfer"}
+                            <span className="material-icons-outlined text-sm">{paymentMethod === 'cod' ? 'done_all' : 'lock'}</span>
                         </button>
 
                         <div className="mt-10 flex items-center justify-center gap-10">
