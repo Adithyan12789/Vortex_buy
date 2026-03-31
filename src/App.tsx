@@ -4,13 +4,11 @@ import Footer from "@/components/Footer";
 import HomePage from "@/app/page";
 import ListPage from "@/app/list/page";
 import SinglePage from "@/app/[slug]/page";
-import LoginPage from "@/app/login/page";
 import AdminDashboard from "@/app/admin/page";
 import Loader from "@/components/Loader";
 import DealsPage from "@/app/deals/page";
 import AboutPage from "@/app/about/page";
 import ContactPage from "@/app/contact/page";
-import ProfilePage from "@/app/profile/page";
 
 const Layout = ({ children }: { children: React.ReactNode }) => {
   const location = useLocation();
@@ -36,8 +34,6 @@ function App() {
             <Route path="/deals" element={<DealsPage />} />
             <Route path="/about" element={<AboutPage />} />
             <Route path="/contact" element={<ContactPage />} />
-            <Route path="/profile" element={<ProfilePage />} />
-            <Route path="/login" element={<LoginPage />} />
             <Route path="/admin/*" element={<AdminDashboard />} />
           </Routes>
         </Layout>

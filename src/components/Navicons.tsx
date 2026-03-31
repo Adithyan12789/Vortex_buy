@@ -12,16 +12,6 @@ const Navicons = () => {
   const navigate = useNavigate();
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isNotificationOpen, setIsNotificationOpen] = useState(false);
-  const isLoggedIn = !!Cookies.get("token");
-
-  const handleProfile = () => {
-    if (!isLoggedIn) {
-      navigate("/login");
-    } else {
-      navigate("/profile");
-    }
-  };
-
   const handleCart = () => {
     setIsCartOpen((prev) => !prev);
     setIsNotificationOpen(false);
@@ -32,7 +22,7 @@ const Navicons = () => {
     setIsCartOpen(false);
   };
 
-  const { cart, counter, getCart } = useCartStore();
+  const { counter, getCart } = useCartStore();
 
   useEffect(() => {
     getCart();
@@ -40,25 +30,6 @@ const Navicons = () => {
 
   return (
     <div className="flex items-center gap-4 xl:gap-6 relative">
-      {/* USER PROFILE */}
-      <div 
-        className="flex items-center gap-2 cursor-pointer group p-1 rounded-full hover:bg-gray-100/80 transition-all"
-        onClick={handleProfile}
-      >
-        <div className={`p-1.5 rounded-full ${isLoggedIn ? 'bg-vortexBuy/10' : ''}`}>
-          {isLoggedIn ? (
-            <HiUser className="text-2xl text-vortexBuy" />
-          ) : (
-            <HiOutlineUser className="text-2xl text-gray-700 group-hover:text-vortexBuy transition-colors" />
-          )}
-        </div>
-        {!isLoggedIn && (
-          <span className="hidden lg:block text-xs font-bold text-gray-500 group-hover:text-vortexBuy transition-colors pr-2 uppercase tracking-wider">
-            Sign In
-          </span>
-        )}
-      </div>
-
       {/* NOTIFICATIONS */}
       <div className="relative cursor-pointer group p-2 rounded-full hover:bg-gray-100/80 transition-all" onClick={handleNotification}>
         <HiOutlineBell className="text-2xl text-gray-700 group-hover:text-vortexBuy transition-colors" />

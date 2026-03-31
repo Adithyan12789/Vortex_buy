@@ -85,7 +85,6 @@ const Footer = () => {
             <h1 className="font-medium text-lg">HELP</h1>
             <div className="flex flex-col gap-4">
               <Link to="/">Customer Service</Link>
-              <Link to="/">My Account</Link>
               <Link to="/">Find a store</Link>
               <Link to="/">Legal & Privacy</Link>
               <Link to="/">Gift Card</Link>

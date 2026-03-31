@@ -12,11 +12,6 @@ type CartState = {
   checkout: (amount: number) => void;
 };
 
-const getAuthHeader = () => {
-  const token = Cookies.get("token");
-  return token ? { "x-auth-token": token } : {};
-};
-
 const getGuestId = () => {
   let guestId = localStorage.getItem("guestId");
   if (!guestId) {
@@ -34,9 +29,7 @@ export const useCartStore = create<CartState>((set, get) => ({
   getCart: async () => {
     try {
       const guestId = getGuestId();
-      const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/cart?guestId=${guestId}`, {
-        headers: getAuthHeader(),
-      });
+      const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/cart?guestId=${guestId}`);
       const cart = res.data;
       set({
         cart: cart || { lineItems: [], subtotal: { amount: 0 } },
@@ -55,8 +48,7 @@ export const useCartStore = create<CartState>((set, get) => ({
       const guestId = getGuestId();
       const res = await axios.post(
         `${import.meta.env.VITE_API_URL}/api/cart/add`,
-        { productId, variantId, quantity, guestId },
-        { headers: getAuthHeader() }
+        { productId, variantId, quantity, guestId }
       );
       const cart = res.data.cart;
       set({ cart, counter: cart?.lineItems?.length || 0, isLoading: false });
@@ -72,8 +64,7 @@ export const useCartStore = create<CartState>((set, get) => ({
       const guestId = getGuestId();
       const res = await axios.post(
         `${import.meta.env.VITE_API_URL}/api/cart/remove`,
-        { itemId, guestId },
-        { headers: getAuthHeader() }
+        { itemId, guestId }
       );
       const cart = res.data.cart;
       set({ cart, counter: cart?.lineItems?.length || 0, isLoading: false });
@@ -89,8 +80,7 @@ export const useCartStore = create<CartState>((set, get) => ({
       const cart = get().cart;
       const res = await axios.post(
         `${import.meta.env.VITE_API_URL}/api/payment/create-order`,
-        { amount, lineItems: cart.lineItems },
-        { headers: getAuthHeader() }
+        { amount, lineItems: cart.lineItems }
       );
 
       const order = res.data;
@@ -109,8 +99,7 @@ export const useCartStore = create<CartState>((set, get) => ({
               razorpay_order_id: response.razorpay_order_id,
               razorpay_payment_id: response.razorpay_payment_id,
               razorpay_signature: response.razorpay_signature,
-            },
-            { headers: getAuthHeader() }
+            }
           );
 
           if (verifyRes.data.success) {
@@ -125,7 +114,7 @@ export const useCartStore = create<CartState>((set, get) => ({
       razorpay.open();
     } catch (error) {
       console.error("Checkout failed:", error);
-      alert("Checkout failed. Are you logged in?");
+      alert("Checkout failed. Please try again.");
     } finally {
       set((state) => ({ ...state, isLoading: false }));
     }
