@@ -22,15 +22,27 @@ const getGuestId = () => {
   return guestId;
 };
 
+const getApiUrl = () => {
+  return import.meta.env.VITE_API_URL || "http://localhost:5000";
+};
+
+const getAuthHeaders = () => {
+  const token = Cookies.get("token");
+  return token ? { Authorization: `Bearer ${token}` } : {};
+};
+
 export const useCartStore = create<CartState>((set, get) => ({
   cart: { lineItems: [], subtotal: { amount: 0 } },
-  isLoading: true,
+  isLoading: false,
   counter: 0,
 
   getCart: async () => {
     try {
+      set({ isLoading: true });
       const guestId = getGuestId();
-      const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/cart?guestId=${guestId}`);
+      const res = await axios.get(`${getApiUrl()}/api/cart?guestId=${guestId}`, {
+        headers: getAuthHeaders(),
+      });
       const cart = res.data;
       set({
         cart: cart || { lineItems: [], subtotal: { amount: 0 } },
@@ -48,8 +60,9 @@ export const useCartStore = create<CartState>((set, get) => ({
     try {
       const guestId = getGuestId();
       const res = await axios.post(
-        `${import.meta.env.VITE_API_URL}/api/cart/add`,
-        { productId, variantId, quantity, guestId }
+        `${getApiUrl()}/api/cart/add`,
+        { productId, variantId, quantity, guestId },
+        { headers: getAuthHeaders() }
       );
       const cart = res.data.cart;
       set({ cart, counter: cart?.lineItems?.length || 0, isLoading: false });
@@ -64,11 +77,16 @@ export const useCartStore = create<CartState>((set, get) => ({
     try {
       const guestId = getGuestId();
       const res = await axios.post(
-        `${import.meta.env.VITE_API_URL}/api/cart/remove`,
-        { itemId, guestId }
+        `${getApiUrl()}/api/cart/remove`,
+        { itemId, guestId },
+        { headers: getAuthHeaders() }
       );
       const cart = res.data.cart;
-      set({ cart, counter: cart?.lineItems?.length || 0, isLoading: false });
+      set({
+        cart: cart || { lineItems: [], subtotal: { amount: 0 } },
+        counter: cart?.lineItems?.length || 0,
+        isLoading: false,
+      });
     } catch (error) {
       console.error("Remove item failed", error);
       set((state) => ({ ...state, isLoading: false }));
@@ -80,11 +98,16 @@ export const useCartStore = create<CartState>((set, get) => ({
     try {
       const guestId = getGuestId();
       const res = await axios.post(
-        `${import.meta.env.VITE_API_URL}/api/cart/update-quantity`,
-        { productId, quantity, guestId }
+        `${getApiUrl()}/api/cart/update-quantity`,
+        { productId, quantity, guestId },
+        { headers: getAuthHeaders() }
       );
       const cart = res.data.cart;
-      set({ cart, counter: cart?.lineItems?.length || 0, isLoading: false });
+      set({
+        cart: cart || { lineItems: [], subtotal: { amount: 0 } },
+        counter: cart?.lineItems?.length || 0,
+        isLoading: false,
+      });
     } catch (error) {
       console.error("Update quantity failed", error);
       set((state) => ({ ...state, isLoading: false }));
@@ -97,29 +120,42 @@ export const useCartStore = create<CartState>((set, get) => ({
       const cart = get().cart;
       const guestId = getGuestId();
       const res = await axios.post(
-        `${import.meta.env.VITE_API_URL}/api/payment/create-order`,
+        `${getApiUrl()}/api/payment/create-order`,
         { 
           amount, 
           lineItems: cart.lineItems, 
           guestId,
           paymentMethod: metadata?.paymentMethod || 'Razorpay',
           shippingInfo: metadata?.shippingInfo
-        }
+        },
+        { headers: getAuthHeaders() }
       );
 
       const order = res.data;
       
+      // COD PROTOCOL
+      if (order.id?.startsWith('ord_cod_') || metadata?.paymentMethod === 'COD') {
+          set({
+              cart: { lineItems: [], subtotal: { amount: 0 } },
+              counter: 0,
+              isLoading: false
+          });
+          window.location.href = "/profile?tab=orders";
+          return;
+      }
+
       // EXCLUSIVE DEMO PROTOCOL (Intercept mock orders)
       if (order.id.startsWith('order_demo_')) {
           console.info("AUTHENTICATING: Vortex-Vault Protocol [DEMO]");
           setTimeout(async () => {
               try {
                   const verifyRes = await axios.post(
-                      `${import.meta.env.VITE_API_URL}/api/payment/verify`,
+                      `${getApiUrl()}/api/payment/verify`,
                       { 
                         razorpay_order_id: order.id, 
                         razorpay_payment_id: "demo_transfer_" + Math.random().toString(36).slice(2)
-                      }
+                      },
+                      { headers: getAuthHeaders() }
                   );
                   if (verifyRes.data.success) {
                       alert("Acquisition Finalized Successfully! Your order has been registered in the Archive.");
@@ -144,12 +180,13 @@ export const useCartStore = create<CartState>((set, get) => ({
         order_id: order.id,
         handler: async function (response: any) {
           const verifyRes = await axios.post(
-            `${import.meta.env.VITE_API_URL}/api/payment/verify`,
+            `${getApiUrl()}/api/payment/verify`,
             {
               razorpay_order_id: response.razorpay_order_id,
               razorpay_payment_id: response.razorpay_payment_id,
               razorpay_signature: response.razorpay_signature,
-            }
+            },
+            { headers: getAuthHeaders() }
           );
 
           if (verifyRes.data.success) {

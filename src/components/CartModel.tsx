@@ -52,7 +52,7 @@ const CartModel = () => {
                     </div>
                     <button 
                       className="text-[10px] font-black uppercase tracking-widest text-red-400 hover:text-red-600 transition-colors cursor-pointer" 
-                      onClick={() => !isLoading && removeItem(item.productId?._id!)}
+                      onClick={() => !isLoading && removeItem(item.productId?._id || item.productId || item._id)}
                     >
                       {isLoading ? "Wait..." : "Remove"}
                     </button>

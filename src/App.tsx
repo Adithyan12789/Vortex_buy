@@ -1,4 +1,5 @@
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
+import React, { useEffect } from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import HomePage from "@/app/page";
@@ -12,16 +13,26 @@ import ContactPage from "@/app/contact/page";
 import CartPage from "@/app/cart/page";
 import OrdersPage from "@/app/orders/page";
 import CheckoutPage from "@/app/checkout/page";
+import LoginPage from "@/app/login/page";
+import ProfilePage from "@/app/profile/page";
+import { useAuthStore } from "@/hooks/useAuthStore";
 
 const Layout = ({ children }: { children: React.ReactNode }) => {
   const location = useLocation();
   const isAdmin = location.pathname.startsWith("/admin");
+  const isAuthPage = location.pathname.startsWith("/login");
+  const { checkAuth } = useAuthStore();
+
+  useEffect(() => {
+    checkAuth();
+  }, [checkAuth]);
+
   return (
     <>
       <Loader key={location.pathname} />
-      {!isAdmin && <Navbar />}
+      {!isAdmin && !isAuthPage && <Navbar />}
       {children}
-      {!isAdmin && <Footer />}
+      {!isAdmin && !isAuthPage && <Footer />}
     </>
   );
 };
@@ -29,20 +40,22 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
 function App() {
   return (
     <BrowserRouter>
-        <Layout>
-          <Routes>
-            <Route path="/" element={<HomePage />} />
-            <Route path="/list" element={<ListPage />} />
-            <Route path="/:slug" element={<SinglePage />} />
-            <Route path="/cart" element={<CartPage />} />
-            <Route path="/orders" element={<OrdersPage />} />
-            <Route path="/checkout" element={<CheckoutPage />} />
-            <Route path="/deals" element={<DealsPage />} />
-            <Route path="/about" element={<AboutPage />} />
-            <Route path="/contact" element={<ContactPage />} />
-            <Route path="/admin/*" element={<AdminDashboard />} />
-          </Routes>
-        </Layout>
+      <Layout>
+        <Routes>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/list" element={<ListPage />} />
+          <Route path="/:slug" element={<SinglePage />} />
+          <Route path="/cart" element={<CartPage />} />
+          <Route path="/orders" element={<OrdersPage />} />
+          <Route path="/checkout" element={<CheckoutPage />} />
+          <Route path="/deals" element={<DealsPage />} />
+          <Route path="/about" element={<AboutPage />} />
+          <Route path="/contact" element={<ContactPage />} />
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/profile" element={<ProfilePage />} />
+          <Route path="/admin/*" element={<AdminDashboard />} />
+        </Routes>
+      </Layout>
     </BrowserRouter>
   );
 }

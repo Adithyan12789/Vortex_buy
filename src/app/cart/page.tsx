@@ -99,14 +99,14 @@ const CartPage = () => {
                   <div className="col-span-1 md:col-span-2 flex justify-center">
                     <div className="flex items-center gap-4 px-3 py-2 bg-gray-50 rounded-2xl border border-gray-100 group-hover:border-vortexBuy/30 transition-all">
                        <button 
-                         onClick={() => updateQuantity(item.productId?._id, item.quantity - 1)}
+                         onClick={() => updateQuantity(item.productId?._id || item.productId || item._id, item.quantity - 1)}
                          className="w-8 h-8 rounded-full bg-white border border-gray-200 flex items-center justify-center text-gray-500 hover:bg-vortexBuy hover:text-white hover:border-vortexBuy transition-all shadow-sm active:scale-90"
                        >
                          -
                        </button>
                        <span className="text-base font-black text-gray-900 tabular-nums w-8 text-center">{item.quantity}</span>
                        <button 
-                         onClick={() => updateQuantity(item.productId?._id, item.quantity + 1)}
+                         onClick={() => updateQuantity(item.productId?._id || item.productId || item._id, item.quantity + 1)}
                          className="w-8 h-8 rounded-full bg-white border border-gray-200 flex items-center justify-center text-gray-500 hover:bg-vortexBuy hover:text-white hover:border-vortexBuy transition-all shadow-sm active:scale-90"
                        >
                          +
@@ -117,7 +117,7 @@ const CartPage = () => {
                   {/* Value */}
                   <div className="col-span-1 md:col-span-2 text-right">
                     <div className="flex flex-col">
-                      <span className="text-2xl font-black text-gray-900 tracking-tight">₹{item.productId?.price?.price}</span>
+                      <span className="text-2xl font-black text-gray-900 tracking-tight">₹{item.productId?.price?.price || 0}</span>
                       <span className="text-[9px] font-bold text-gray-400 uppercase tracking-widest mt-1">Per Unit</span>
                     </div>
                   </div>
@@ -125,7 +125,7 @@ const CartPage = () => {
                   {/* Actions */}
                   <div className="col-span-1 md:col-span-2 flex justify-end">
                     <button 
-                      onClick={() => removeItem(item.productId?._id)}
+                      onClick={() => removeItem(item.productId?._id || item.productId || item._id)}
                       className="w-14 h-14 rounded-full bg-red-50 text-red-500 flex items-center justify-center hover:bg-red-500 hover:text-white transition-all duration-300 group/btn active:scale-95 shadow-sm overflow-hidden"
                     >
                       <HiOutlineTrash className="text-2xl group-hover/btn:scale-110 transition-transform" />
